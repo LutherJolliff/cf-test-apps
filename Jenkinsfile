@@ -53,7 +53,7 @@ pipeline {
                     dir ('terraform') {
                         sh '''
                             terraform --version
-                            terraform init
+                            terraform init -backend-config "key=cloudFoundations/state.tfvars"
                             terraform plan -input=false
                             terraform apply --auto-approve
                         '''
