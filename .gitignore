@@ -1,2 +1,3 @@
 ./huckleberry_test_source.zip
 .env
+node_modules/
