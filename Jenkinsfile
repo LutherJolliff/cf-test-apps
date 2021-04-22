@@ -27,6 +27,7 @@ pipeline {
             }
         }
         stage('test') {
+            steps {
                 sh 'curl -fsSL https://deb.nodesource.com/setup_12.x | sudo -E bash && sudo apt-get install -y nodejs'
                 echo 'Testing...'
                 sh 'npm run test'
