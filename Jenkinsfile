@@ -50,12 +50,14 @@ pipeline {
             steps {
                 script {
                     sh 'ls'
-                    sh '''
-                        terraform --version
-                        terraform init
-                        terraform plan -input=false
-                        terraform apply --auto-approve
-                    '''
+                    dir ('terraform') {
+                        sh '''
+                            terraform --version
+                            terraform init
+                            terraform plan -input=false
+                            terraform apply --auto-approve
+                        '''
+                    }
                 }
             }
         }
