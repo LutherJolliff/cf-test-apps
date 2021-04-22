@@ -44,20 +44,18 @@ pipeline {
         stage('provision-infrastructure') {
             when {
                 anyOf {
-                    branch 'cf_test'
+                    branch 'js_db_sqlServer'
                 }
             }
             steps {
                 script {
                     sh 'ls'
-                    dir ('terraform') {
-                        sh '''
-                            terraform --version
-                            terraform init
-                            terraform plan -input=false
-                            terraform apply --auto-approve
-                        '''
-                    }
+                    sh '''
+                        terraform --version
+                        terraform init
+                        terraform plan -input=false
+                        terraform apply --auto-approve
+                    '''
                 }
             }
         }
@@ -69,7 +67,6 @@ pipeline {
                 docker {
                     image 'cynergeconsulting/aws-cli:latest'
                     args '-u root'
-                    alwaysPull true
                 }
             }
             steps {
