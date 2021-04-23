@@ -8,7 +8,7 @@ pipeline {
         TF_VAR_sql_database = credentials('sampleApp-sql-database')
         AWS_ACCESS_KEY_ID = credentials('tf_aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('tf_secret_access_key_id')
-        AWS_REGION = us-gov-west-1
+        AWS_REGION = 'us-gov-west-1'
     }
 
     // agent {
