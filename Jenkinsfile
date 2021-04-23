@@ -8,6 +8,7 @@ pipeline {
         TF_VAR_sql_database = credentials('sampleApp-sql-database')
         AWS_ACCESS_KEY_ID = credentials('tf_aws_access_key_id')
         AWS_SECRET_ACCESS_KEY = credentials('tf_secret_access_key_id')
+        AWS_REGION = us-gov-west-1
     }
 
     // agent {
@@ -74,13 +75,14 @@ pipeline {
                 }
             }
             steps {
-                // sh 'cd '
-                sh 'ls'
-                sh 'env | grep AWS'
-                sh 'aws s3 ls'
-                sh 'eb deploy development'
-                sh 'sleep 5'
-                sh 'aws elasticbeanstalk describe-environments --environment-names development --query "Environments[*].CNAME" --output text'
+                sh '''
+                    VERSION=$( date '+%F_%H:%M:%S' )
+                    zip -r ${BUILD_TAG}.zip .
+                    aws s3 cp ./$BUILD_TAG.zip s3://fs-${TF_VAR_eb_app_name}-nonprod/$TF_VAR_eb_app_name/
+                    aws elasticbeanstalk create-application-version --application-name $TF_VAR_eb_app_name --version-label v${BUILD_NUMBER}_${VERSION} --description="Built by Jenkins job $JOB_NAME" --source-bundle S3Bucket="fs-${TF_VAR_eb_app_name}-nonprod",S3Key="$TF_VAR_eb_app_name/${BUILD_TAG}.zip" --region=$AWS_REGION
+                    sleep 2
+                    aws elasticbeanstalk update-environment --application-name $TF_VAR_eb_app_name --environment-name development --version-label v${BUILD_NUMBER}_${VERSION} --region=$AWS_REGION
+                '''
             }
         }
         stage('staging-deploy') {
@@ -89,10 +91,12 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo 'export PATH="/root/.ebcli-virtual-env/executables:$PATH"' >> ~/.bash_profile
-                    eb deploy staging
-                    sleep 5
-                    aws elasticbeanstalk describe-environments --environment-names staging --query "Environments[*].CNAME" --output text
+                    VERSION=$( date '+%F_%H:%M:%S' )
+                    zip -r ${BUILD_TAG}.zip .
+                    aws s3 cp ./$BUILD_TAG.zip s3://fs-${TF_VAR_eb_app_name}-nonprod/$TF_VAR_eb_app_name/
+                    aws elasticbeanstalk create-application-version --application-name $TF_VAR_eb_app_name --version-label v${BUILD_NUMBER}_${VERSION} --description="Built by Jenkins job $JOB_NAME" --source-bundle S3Bucket="fs-${TF_VAR_eb_app_name}-nonprod",S3Key="$TF_VAR_eb_app_name/${BUILD_TAG}.zip" --region=$AWS_REGION
+                    sleep 2
+                    aws elasticbeanstalk update-environment --application-name $TF_VAR_eb_app_name --environment-name development --version-label v${BUILD_NUMBER}_${VERSION} --region=$AWS_REGION
                 '''
             }
         }
@@ -102,10 +106,12 @@ pipeline {
             }
             steps {
                 sh '''
-                    echo 'export PATH="/root/.ebcli-virtual-env/executables:$PATH"' >> ~/.bash_profile
-                    eb deploy production
-                    sleep 5
-                    aws elasticbeanstalk describe-environments --environment-names production --query "Environments[*].CNAME" --output text
+                    VERSION=$( date '+%F_%H:%M:%S' )
+                    zip -r ${BUILD_TAG}.zip .
+                    aws s3 cp ./$BUILD_TAG.zip s3://fs-${TF_VAR_eb_app_name}-prod/$TF_VAR_eb_app_name/
+                    aws elasticbeanstalk create-application-version --application-name $TF_VAR_eb_app_name --version-label v${BUILD_NUMBER}_${VERSION} --description="Built by Jenkins job $JOB_NAME" --source-bundle S3Bucket="fs-${TF_VAR_eb_app_name}-prod",S3Key="$TF_VAR_eb_app_name/${BUILD_TAG}.zip" --region=$AWS_REGION
+                    sleep 2
+                    aws elasticbeanstalk update-environment --application-name $TF_VAR_eb_app_name --environment-name development --version-label v${BUILD_NUMBER}_${VERSION} --region=$AWS_REGION
                 '''
             }
         }
