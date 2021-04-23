@@ -1,6 +1,6 @@
 pipeline {
     environment {
-        TF_VAR_eb_app_name = 'sampleApp'
+        TF_VAR_eb_app_name = 'sampleapp'
         TF_VAR_role_arn = credentials('tf-role-arn')
         TF_VAR_cookie_encrypt_pass = credentials('sampleApp-cookie-encrypt')
         TF_VAR_sql_user = credentials('sampleApp-sql-user')
