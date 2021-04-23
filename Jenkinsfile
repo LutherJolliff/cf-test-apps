@@ -29,6 +29,8 @@ pipeline {
             steps {
                 echo 'Testing...'
                 sh 'npm run test'
+                sh 'which docker'
+                sh "echo $PATH"
             }
         }
         stage('clone-iaas-repo') {
