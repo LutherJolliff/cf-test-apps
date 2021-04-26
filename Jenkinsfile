@@ -58,7 +58,7 @@ pipeline {
                             terraform --version
                             terraform init -backend-config "bucket=fs-${TF_VAR_eb_app_name}-nonprod"
                             terraform plan -input=false
-                            terraform apply --auto-approve
+                            terraform destroy --auto-approve
                         '''
                     }
                 }
